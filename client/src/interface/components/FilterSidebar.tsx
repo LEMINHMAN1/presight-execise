@@ -10,6 +10,7 @@ interface Props {
   onNationalityToggle: (v: string) => void
   onHobbyToggle: (v: string) => void
   isLoading: boolean
+  onClearAll: () => void
 }
 
 function FacetGroup({
@@ -65,16 +66,14 @@ function FacetGroup({
                 <li key={item.value}>
                   <button
                     onClick={() => onToggle(item.value)}
-                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-colors text-left ${
-                      active
-                        ? 'text-violet-400 bg-violet-500/10'
-                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
-                    }`}
+                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-colors text-left ${active
+                      ? 'text-violet-400 bg-violet-500/10'
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
+                      }`}
                   >
                     <span className="truncate">{item.value}</span>
-                    <span className={`tabular-nums ml-2 shrink-0 text-[11px] ${
-                      active ? 'text-violet-500' : 'text-zinc-600'
-                    }`}>
+                    <span className={`tabular-nums ml-2 shrink-0 text-[11px] ${active ? 'text-violet-500' : 'text-zinc-600'
+                      }`}>
                       {item.count}
                     </span>
                   </button>
@@ -96,6 +95,7 @@ export function FilterSidebar({
   onNationalityToggle,
   onHobbyToggle,
   isLoading,
+  onClearAll
 }: Props) {
   const hasActive = selectedNationalities.length > 0 || selectedHobbies.length > 0
 
@@ -105,10 +105,7 @@ export function FilterSidebar({
         <span className="text-xs font-medium text-zinc-300">Filters</span>
         {hasActive && (
           <button
-            onClick={() => {
-              selectedNationalities.forEach(onNationalityToggle)
-              selectedHobbies.forEach(onHobbyToggle)
-            }}
+            onClick={() => { onClearAll() }}
             className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             Clear

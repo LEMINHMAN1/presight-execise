@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { debounce } from 'lodash'
 import { useUrlState } from '../../application/hooks/useUrlState'
 import { useUsers } from '../../application/hooks/useUsers'
 import { useFacets } from '../../application/hooks/useFacets'
-import { useDebounce } from '../../application/hooks/useDebounce'
 import { FilterSidebar } from '../components/FilterSidebar'
 import { VirtualList } from '../components/VirtualList'
 import { SearchInput } from '../components/SearchInput'
@@ -15,14 +15,20 @@ export function DirectoryPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const [searchInput, setSearchInput] = useState(state.filter.search)
-  const debouncedSearch = useDebounce(searchInput, 300)
+  const stateRef = useRef(state)
+  stateRef.current = state
 
-  useEffect(() => {
-    if (debouncedSearch !== state.filter.search) {
-      setState({ filter: { ...state.filter, search: debouncedSearch } })
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch])
+  const commitSearch = useCallback(
+    debounce((value: string) => {
+      setState({ filter: { ...stateRef.current.filter, search: value } })
+    }, 300),
+    [] // eslint-disable-line react-hooks/exhaustive-deps
+  )
+
+  function onSearchChange(value: string) {
+    setSearchInput(value)
+    commitSearch(value)
+  }
 
   const { users, hasMore, isLoading, error, loadMore } = useUsers(state.filter, state.sort)
   const { facets, isLoading: facetsLoading } = useFacets(state.filter, state.sort)
@@ -56,7 +62,7 @@ export function DirectoryPage() {
             <div className="flex items-center gap-2 shrink-0">
               <div className="w-6 h-6 rounded-md bg-violet-600 flex items-center justify-center">
                 <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                 </svg>
               </div>
               <span className="text-sm font-semibold text-zinc-200 hidden sm:inline tracking-tight">
@@ -65,7 +71,7 @@ export function DirectoryPage() {
             </div>
 
             <div className="flex-1">
-              <SearchInput value={searchInput} onChange={setSearchInput} />
+              <SearchInput value={searchInput} onChange={onSearchChange} />
             </div>
           </div>
 
@@ -135,6 +141,7 @@ export function DirectoryPage() {
             onNationalityToggle={toggleNationality}
             onHobbyToggle={toggleHobby}
             isLoading={facetsLoading}
+            onClearAll={() => { setState({ filter: { ...state.filter, hobbies: [], nationalities: [] } }) }}
           />
         </div>
 
@@ -178,22 +185,10 @@ export function DirectoryPage() {
                 selectedHobbies={state.filter.hobbies}
                 onNationalityToggle={toggleNationality}
                 onHobbyToggle={toggleHobby}
+                onClearAll={() => setState({ filter: { ...state.filter, nationalities: [], hobbies: [] } })}
                 isLoading={facetsLoading}
               />
             </div>
-            {activeFilterCount > 0 && (
-              <div className="px-3 py-3 border-t border-zinc-800 shrink-0">
-                <button
-                  onClick={() => {
-                    state.filter.nationalities.forEach(toggleNationality)
-                    state.filter.hobbies.forEach(toggleHobby)
-                  }}
-                  className="w-full py-2 text-xs font-medium text-zinc-500 border border-zinc-800 rounded-lg hover:border-zinc-600 hover:text-zinc-300 transition-colors"
-                >
-                  Clear all filters
-                </button>
-              </div>
-            )}
           </div>
         </>
       )}
