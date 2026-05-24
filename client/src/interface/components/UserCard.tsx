@@ -16,15 +16,15 @@ export function UserCard({ user }: Props) {
         className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-zinc-800"
       />
       <div className="flex-1 min-w-0">
-        {/* Row 1: name + age */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-zinc-100 truncate leading-none">
-            {user.first_name} {user.last_name}
-          </span>
+        {/* Row 1: name */}
+        <span className="text-sm font-medium text-zinc-100 truncate leading-none block">
+          {user.first_name} {user.last_name}
+        </span>
+        {/* Row 2: nationality + age */}
+        <div className="flex items-center justify-between gap-2 mt-0.5">
+          <span className="text-xs text-zinc-500 truncate">{user.nationality}</span>
           <span className="text-xs text-zinc-600 tabular-nums shrink-0">{user.age}y</span>
         </div>
-        {/* Row 2: nationality */}
-        <p className="text-xs text-zinc-500 mt-0.5 truncate">{user.nationality}</p>
 
         {/* Row 3: hobbies */}
         {visible.length > 0 && (

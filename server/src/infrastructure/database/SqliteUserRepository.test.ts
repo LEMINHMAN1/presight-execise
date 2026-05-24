@@ -192,5 +192,18 @@ describe('SqliteUserRepository', () => {
       const counts = facets.nationalities.map(f => f.count)
       expect(counts).toEqual([...counts].sort((a, b) => b - a))
     })
+
+    it('returns all nationalities regardless of active filters', () => {
+      const facets = repo.getFacets({ ...noFilter, nationalities: ['UK'], hobbies: ['Gaming'] })
+      expect(facets.nationalities.find(f => f.value === 'US')).toBeDefined()
+      expect(facets.nationalities.find(f => f.value === 'UK')).toBeDefined()
+      expect(facets.nationalities.find(f => f.value === 'DE')).toBeDefined()
+    })
+
+    it('returns all hobbies regardless of active filters', () => {
+      const facets = repo.getFacets({ ...noFilter, hobbies: ['Gaming'], nationalities: ['UK'] })
+      expect(facets.hobbies.find(f => f.value === 'Gaming')).toBeDefined()
+      expect(facets.hobbies.find(f => f.value === 'Reading')).toBeDefined()
+    })
   })
 })
