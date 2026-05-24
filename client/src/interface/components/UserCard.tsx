@@ -23,25 +23,24 @@ export function UserCard({ user }: Props) {
           </span>
           <span className="text-xs text-zinc-600 tabular-nums shrink-0">{user.age}y</span>
         </div>
-        {/* Row 2: nationality · hobbies */}
-        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-          <span className="text-xs text-zinc-500">{user.nationality}</span>
-          {visible.length > 0 && (
-            <>
-              <span className="text-zinc-700 text-xs">·</span>
-              {visible.map(h => (
-                <span key={h} className="px-1.5 py-px bg-violet-500/10 text-violet-400 text-[11px] rounded border border-violet-500/15">
-                  {h}
-                </span>
-              ))}
-              {extra > 0 && (
-                <span className="px-1.5 py-px bg-zinc-800 text-zinc-500 text-[11px] rounded">
-                  +{extra}
-                </span>
-              )}
-            </>
-          )}
-        </div>
+        {/* Row 2: nationality */}
+        <p className="text-xs text-zinc-500 mt-0.5 truncate">{user.nationality}</p>
+
+        {/* Row 3: hobbies */}
+        {visible.length > 0 && (
+          <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+            {visible.map(h => (
+              <span key={h} className="px-1.5 py-px bg-violet-500/10 text-violet-400 text-[11px] rounded border border-violet-500/15">
+                {h}
+              </span>
+            ))}
+            {extra > 0 && (
+              <span className="px-1.5 py-px bg-zinc-800 text-zinc-500 text-[11px] rounded">
+                +{extra}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -56,8 +55,8 @@ export function UserCardSkeleton() {
           <div className="h-3 bg-zinc-800 rounded animate-pulse w-28" />
           <div className="h-2.5 bg-zinc-800 rounded animate-pulse w-5" />
         </div>
-        <div className="flex gap-1.5 items-center">
-          <div className="h-2.5 bg-zinc-800 rounded animate-pulse w-16" />
+        <div className="h-2.5 bg-zinc-800 rounded animate-pulse w-16" />
+        <div className="flex gap-1 mt-0.5">
           <div className="h-4 bg-zinc-800 rounded animate-pulse w-12" />
           <div className="h-4 bg-zinc-800 rounded animate-pulse w-14" />
         </div>

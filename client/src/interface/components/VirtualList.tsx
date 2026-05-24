@@ -19,7 +19,7 @@ export function VirtualList({ users, hasMore, isLoading, error, onLoadMore }: Pr
   const rowVirtualizer = useVirtualizer({
     count: users.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 68,
+    estimateSize: () => 80,
     overscan: 3,
   })
 
