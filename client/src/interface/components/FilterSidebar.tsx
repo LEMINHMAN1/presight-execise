@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import type { FacetItem } from '../../domain/user/types'
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
   onNationalityToggle: (v: string) => void
   onHobbyToggle: (v: string) => void
   isLoading: boolean
+  onClearAll: () => void
 }
 
 function FacetGroup({
@@ -22,33 +24,63 @@ function FacetGroup({
   selected: string[]
   onToggle: (v: string) => void
 }) {
+  const [open, setOpen] = useState(true)
+
   return (
     <div>
-      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{title}</h3>
-      {items.length === 0 ? (
-        <p className="text-xs text-gray-400 italic">No results</p>
-      ) : (
-        <ul className="space-y-1">
-          {items.map(item => {
-            const active = selected.includes(item.value)
-            return (
-              <li key={item.value}>
-                <button
-                  onClick={() => onToggle(item.value)}
-                  className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors text-left ${
-                    active
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="truncate">{item.value}</span>
-                  <span className={`text-xs ml-2 shrink-0 ${active ? 'text-blue-500' : 'text-gray-400'}`}>
-                    {item.count}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
+      {/* Header — collapsible */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-2 py-1 rounded-lg hover:bg-zinc-800/40 transition-colors group"
+      >
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
+            {title}
+          </span>
+          {items.length > 0 && (
+            <span className="text-[10px] tabular-nums text-zinc-600">
+              {selected.length > 0 ? (
+                <span className="text-violet-400">{selected.length}/</span>
+              ) : null}
+              {items.length}
+            </span>
+          )}
+        </div>
+        <svg
+          className={`w-3 h-3 text-zinc-600 transition-transform duration-150 ${open ? 'rotate-0' : '-rotate-90'}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Items */}
+      {open && (
+        <ul className="mt-0.5">
+          {items.length === 0 ? (
+            <li className="px-2 py-1 text-xs text-zinc-700 italic">No results</li>
+          ) : (
+            items.map(item => {
+              const active = selected.includes(item.value)
+              return (
+                <li key={item.value}>
+                  <button
+                    onClick={() => onToggle(item.value)}
+                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-colors text-left ${active
+                      ? 'text-violet-400 bg-violet-500/10'
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
+                      }`}
+                  >
+                    <span className="truncate">{item.value}</span>
+                    <span className={`tabular-nums ml-2 shrink-0 text-[11px] ${active ? 'text-violet-500' : 'text-zinc-600'
+                      }`}>
+                      {item.count}
+                    </span>
+                  </button>
+                </li>
+              )
+            })
+          )}
         </ul>
       )}
     </div>
@@ -63,28 +95,34 @@ export function FilterSidebar({
   onNationalityToggle,
   onHobbyToggle,
   isLoading,
+  onClearAll
 }: Props) {
   const hasActive = selectedNationalities.length > 0 || selectedHobbies.length > 0
 
   return (
-    <aside className="flex flex-col gap-6 h-full overflow-y-auto pr-1">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-gray-800">Filters</h2>
+    <aside className="flex flex-col gap-3">
+      <div className="hidden md:flex items-center justify-between px-2">
+        <span className="text-xs font-medium text-zinc-300">Filters</span>
         {hasActive && (
           <button
-            onClick={() => {
-              selectedNationalities.forEach(onNationalityToggle)
-              selectedHobbies.forEach(onHobbyToggle)
-            }}
-            className="text-xs text-blue-600 hover:underline"
+            onClick={() => { onClearAll() }}
+            className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
           >
-            Clear all
+            Clear
           </button>
         )}
       </div>
 
       {isLoading && (
-        <div className="text-xs text-gray-400 animate-pulse">Updating…</div>
+        <div className="flex gap-1 px-2">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="w-1 h-1 bg-violet-500 rounded-full animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </div>
       )}
 
       <FacetGroup
@@ -93,6 +131,8 @@ export function FilterSidebar({
         selected={selectedNationalities}
         onToggle={onNationalityToggle}
       />
+
+      <div className="h-px bg-zinc-800/60 mx-2" />
 
       <FacetGroup
         title="Hobbies"

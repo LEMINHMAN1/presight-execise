@@ -57,7 +57,7 @@ function runOne<T>(db: Database.Database, sql: string, params: unknown[]): T {
 }
 
 export class SqliteUserRepository implements IUserRepository {
-  constructor(private db: Database.Database) {}
+  constructor(private db: Database.Database) { }
 
   findMany(filter: UserFilter, sort: UserSort, pagination: Pagination): PagedResult {
     const { sql: where, params } = buildWhere(filter)
@@ -99,11 +99,11 @@ export class SqliteUserRepository implements IUserRepository {
     const nationalities = run<FacetItem>(
       this.db,
       `SELECT u.nationality as value, COUNT(DISTINCT u.id) as count
-       FROM users u ${where}
+       FROM users u
        GROUP BY u.nationality
        ORDER BY count DESC
        LIMIT 20`,
-      params
+      []
     )
 
     const hobbies = run<FacetItem>(
@@ -111,11 +111,10 @@ export class SqliteUserRepository implements IUserRepository {
       `SELECT h.hobby as value, COUNT(DISTINCT h.user_id) as count
        FROM user_hobbies h
        JOIN users u ON h.user_id = u.id
-       ${where}
        GROUP BY h.hobby
        ORDER BY count DESC
        LIMIT 20`,
-      params
+      []
     )
 
     return { nationalities, hobbies }

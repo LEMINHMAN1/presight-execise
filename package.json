@@ -13,7 +13,8 @@
     "dev:server": "npm run dev --workspace=server",
     "dev:client": "npm run dev --workspace=client",
     "build:server": "npm run build --workspace=server",
-    "build:client": "npm run build --workspace=client"
+    "build:client": "npm run build --workspace=client",
+    "test": "npm run test --workspace=server"
   },
   "devDependencies": {
     "lerna": "~8.2.1"
