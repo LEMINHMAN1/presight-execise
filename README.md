@@ -121,9 +121,11 @@ Returns a paginated list of users.
 
 ### `GET /api/facets`
 
-Returns the top 20 nationalities and hobbies with user counts. Counts reflect the global dataset — all filters and search are ignored for facet computation.
+Returns the top 20 nationalities and hobbies with user counts. Uses **disjunctive faceting**:
+- Nationality counts apply search + hobby filters, but ignore the nationality filter (so all nationality options remain visible when one is selected)
+- Hobby counts apply search + nationality filters, but ignore the hobby filter (so all hobby options remain visible when some are selected)
 
-**Query parameters** — same filter params as `/api/users` (used for future filtered facet support)
+**Query parameters** — same filter params as `/api/users`
 
 **Response**
 ```json
