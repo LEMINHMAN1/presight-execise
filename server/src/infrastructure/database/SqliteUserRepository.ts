@@ -94,16 +94,18 @@ export class SqliteUserRepository implements IUserRepository {
   }
 
   getFacets(filter: UserFilter): UserFacets {
-    const { sql: where, params } = buildWhere(filter)
+    const { sql: whereNat, params: paramsNat } = buildWhere({ ...filter, nationalities: [] })
+    const { sql: whereHobby, params: paramsHobby } = buildWhere({ ...filter, hobbies: [] })
 
     const nationalities = run<FacetItem>(
       this.db,
       `SELECT u.nationality as value, COUNT(DISTINCT u.id) as count
        FROM users u
+       ${whereNat}
        GROUP BY u.nationality
        ORDER BY count DESC
        LIMIT 20`,
-      []
+      paramsNat
     )
 
     const hobbies = run<FacetItem>(
@@ -111,10 +113,11 @@ export class SqliteUserRepository implements IUserRepository {
       `SELECT h.hobby as value, COUNT(DISTINCT h.user_id) as count
        FROM user_hobbies h
        JOIN users u ON h.user_id = u.id
+       ${whereHobby}
        GROUP BY h.hobby
        ORDER BY count DESC
        LIMIT 20`,
-      []
+      paramsHobby
     )
 
     return { nationalities, hobbies }
