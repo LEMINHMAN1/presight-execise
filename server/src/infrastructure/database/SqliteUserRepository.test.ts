@@ -193,15 +193,17 @@ describe('SqliteUserRepository', () => {
       expect(counts).toEqual([...counts].sort((a, b) => b - a))
     })
 
-    it('returns all nationalities regardless of active filters', () => {
-      const facets = repo.getFacets({ ...noFilter, nationalities: ['UK'], hobbies: ['Gaming'] })
+    it('nationality facets ignore nationality filter', () => {
+      // nationality filter excluded → all nationalities visible even when UK is selected
+      const facets = repo.getFacets({ ...noFilter, nationalities: ['UK'] })
       expect(facets.nationalities.find(f => f.value === 'US')).toBeDefined()
       expect(facets.nationalities.find(f => f.value === 'UK')).toBeDefined()
       expect(facets.nationalities.find(f => f.value === 'DE')).toBeDefined()
     })
 
-    it('returns all hobbies regardless of active filters', () => {
-      const facets = repo.getFacets({ ...noFilter, hobbies: ['Gaming'], nationalities: ['UK'] })
+    it('hobby facets ignore hobby filter', () => {
+      // hobby filter excluded → all hobbies visible even when Gaming is selected
+      const facets = repo.getFacets({ ...noFilter, hobbies: ['Gaming'] })
       expect(facets.hobbies.find(f => f.value === 'Gaming')).toBeDefined()
       expect(facets.hobbies.find(f => f.value === 'Reading')).toBeDefined()
     })
